@@ -1,0 +1,24 @@
+{
+  "provider": "cheapcodex",
+  "generated_at": "2026-10-14T20:05:00Z",
+  "endpoint": "https://api.cheapcodex.online",
+  "backup_endpoint": "https://api.cheapcodex.ccwu.cc",
+  "protocol": {
+    "openai": "/v1/chat/completions, /v1/responses (per panel UI), /v1/models, /v1/usage",
+    "anthropic": "/v1/messages (group 33 'claude code')",
+    "auth_headers_accepted": ["Authorization: Bearer sk-…", "x-api-key", "x-goog-api-key"],
+    "auth_headers_evidence": "401 body: {\"code\":\"API_KEY_REQUIRED\",\"message\":\"API key is required in Authorization header (Bearer scheme), x-api-key header, or x-goog-api-key header\"}"
+  },
+  "catalog_status": "gated",
+  "catalog_gate": "GET /v1/models → 403 {\"code\":\"INSUFFICIENT_BALANCE\",\"message\":\"Insufficient account balance\"} for every fresh account (balance 0; subsidy campaign paused).",
+  "models_attempted_measured_403": ["gpt-6-astra", "gpt-5.5", "gpt-5.1-mini", "deepseek-v3.2", "gpt-4o-mini"],
+  "groups_visible_to_users": [
+    { "id": 2, "name": "codex 基本不降智", "platform": "openai", "rate_multiplier": 2, "minimum_balance_usd": 0, "subscription_type": "standard" },
+    { "id": 19, "name": "codex pro expensive and good！！", "platform": "openai", "rate_multiplier": 3, "minimum_balance_usd": 0 },
+    { "id": 32, "name": "百分百不降智", "platform": "openai", "rate_multiplier": 4, "minimum_balance_usd": 0 },
+    { "id": 33, "name": "claude code", "platform": "anthropic", "rate_multiplier": 15, "minimum_balance_usd": 0 }
+  ],
+  "announced_models": ["gpt-6-astra (announcement #41, 2026-09-05)"],
+  "usage_endpoint_shape": { "GET /v1/usage": { "balance": 0, "isValid": true, "mode": "unrestricted", "planName": "钱包余额", "remaining": 0, "unit": "USD" } },
+  "notes": "Catalog cannot be enumerated while balance is 0. Group 2 is used for minted keys (minimum_balance_usd 0); once an account is funded the same keys should expose the catalog. Source of group table: GET /api/v1/groups/available (user session), saved raw at out/groups-available.json."
+}

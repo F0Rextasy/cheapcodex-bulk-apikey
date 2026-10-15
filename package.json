@@ -1,0 +1,41 @@
+{
+  "name": "cheapcodex-bulk-apikey",
+  "version": "1.0.0",
+  "description": "Bulk API keys for cheapcodex.online — free tier: gpt-6-astra, gpt-5.5, deepseek-v3.2 via OpenAI/Claude-code groups; $20 + $20/day credit campaign paused, keys need top-up. One account per key.",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "cheapcodex-bulk-apikey": "cli.js",
+    "cheapcodex-bulk-apikey-launcher": "launcher.js"
+  },
+  "main": "cli.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node launcher.js",
+    "mint": "node cli.js"
+  },
+  "keywords": [
+    "api-key",
+    "bulk",
+    "register",
+    "launcher",
+    "cheapcodex",
+    "bulk",
+    "apikey"
+  ],
+  "files": [
+    "account-info.js",
+    "cdp.js",
+    "chrome-flags.js",
+    "cli.js",
+    "launcher.js",
+    "mint.js",
+    "probe-key.js",
+    "proxy.js",
+    "status.js",
+    "README.md",
+    "LICENSE"
+  ]
+}

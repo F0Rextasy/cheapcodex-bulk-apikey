@@ -35,6 +35,7 @@
     "probe-key.js",
     "proxy.js",
     "status.js",
+    "connect-9router.js",
     "README.md",
     "LICENSE"
   ]

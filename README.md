@@ -11,15 +11,16 @@
 
 # cheapcodex-bulk-apikey
 
-**One [CheapCodex](https://api.cheapcodex.online) account per API key, minted over plain REST with an e-mail code, and written to disk only after the provider's own `/v1/usage` confirms it. The keys are real; inference waits on credit top-up — read the note below.**
+**Bulk-create CheapCodex accounts with auto-generated API keys — OpenAI-compatible inference + 9Router connector.**
 
 [![Node](https://img.shields.io/badge/Node-%E2%89%A518-3DA639?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-blue?style=for-the-badge)](#)
 [![License](https://img.shields.io/badge/license-MIT-6ea8fe?style=for-the-badge)](LICENSE)
+[![9Router](https://img.shields.io/badge/9Router-connector-8B5CF6.svg?style=for-the-badge)](#-connect-to-9router)
 [![Catalog](https://img.shields.io/badge/catalog-gated%20by%20balance-d97706?style=for-the-badge)](#-models--free-tier)
 [![X](https://img.shields.io/badge/X-%40bigbullapp-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/bigbullapp)
 
-[🛠 Quick start](#-quick-start) · [✅ Verified](#-verified-working) · [🤖 Models & free tier](#-models--free-tier) · [🧭 How it works](#-how-it-works) · [⚙️ Options](#️-options) · [🛰️ Proxies](#️-behind-a-proxy) · [🐞 Issues](#-issues)
+[🛠 Quick start](#-quick-start) · [✅ Verified](#-verified-working) · [🤖 Models & free tier](#-models--free-tier) · [🔌 9Router](#-connect-to-9router) · [🧭 How it works](#-how-it-works) · [⚙️ Options](#️-options) · [🛰️ Proxies](#️-behind-a-proxy) · [🐞 Issues](#-issues)
 
 </div>
 
@@ -62,7 +63,7 @@ POST /api/v1/auth/register {email,password,verify_code,aff_code}
 ## 🛠 Quick start
 
 ```bash
-git clone https://github.com/F0Rextasy/cheapcodex-bulk-apikey.git
+# clone this repository (or download the ZIP), then:
 cd cheapcodex-bulk-apikey
 
 # 1) your proxy list, one exit per line (http://, socks5://, socks4:// or bare host:port)
@@ -135,6 +136,30 @@ Minted keys go into **group 2** (`minimum_balance_usd: 0`); group 33 serves the 
 its own budget the moment you fund it (or the campaign returns). Nothing has to be re-minted —
 [`models.json`](models.json) holds the measured snapshot (`catalog_status: "gated"`, the gate body, the
 group table, the `/v1/usage` shape).
+
+## 🔌 Connect to 9Router
+
+CheapCodex is OpenAI-compatible, so register it once and use every key:
+
+```bash
+node connect-9router.js \
+  --base http://localhost:20128 --password 123456 \
+  --keys-file keys.txt
+```
+
+Every key in `keys.txt` becomes one connection of the `cheapcodex` provider node
+(`--api-key <key>` registers a single key instead, `--model <id>` overrides the
+default). Then pick a model inside 9Router:
+
+```
+cheapcodex/gpt-5.5
+cheapcodex/deepseek-v3.2
+cheapcodex/gpt-4o-mini
+```
+
+Point the connector at a refreshed `keys.txt` to add more accounts; the node and
+its model list stay the same. `node launcher.js --connect-9router` runs exactly
+this and asks for the base URL and password first.
 
 ## 🧭 How it works
 
@@ -224,6 +249,6 @@ MIT © 2026, see [LICENSE](LICENSE). Use it on accounts you are allowed to creat
 
 <div align="center">
 
-**Built by F0REXTASY** · [github.com/F0Rextasy](https://github.com/F0Rextasy) · [x.com/bigbullapp](https://x.com/bigbullapp)
+**Built by cheapcodex-bulk-apikey contributors** · [x.com/bigbullapp](https://x.com/bigbullapp)
 
 </div>

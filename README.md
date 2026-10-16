@@ -1,17 +1,17 @@
 <div align="center">
 
 ```
-███████╗ ██████╗ ██████╗ ███████╗██╗  ██╗████████╗ █████╗ ███████╗██╗   ██╗
-██╔════╝██╔═████╗██╔══██╗██╔════╝╚██╗██╔╝╚══██╔══╝██╔══██╗██╔════╝╚██╗ ██╔╝
-█████╗  ██║██╔██║██████╔╝█████╗   ╚███╔╝    ██║   ███████║███████╗ ╚████╔╝
-██╔══╝  ████╔╝██║██╔══██╗██╔══╝   ██╔██╗    ██║   ██╔══██║╚════██║  ╚██╔╝
-██║     ╚██████╔╝██║  ██║███████╗██╔╝ ██╗   ██║   ██║  ██║███████║   ██║
-╚═╝      ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝   ╚═╝
+ ██████╗  ██╗  ██╗ ███████╗  █████╗  ██████╗   ██████╗   ██████╗  ██████╗  ███████╗ ██╗  ██╗
+██╔════╝  ██║  ██║ ██╔════╝ ██╔══██╗ ██╔══██╗ ██╔════╝  ██╔═══██╗ ██╔══██╗ ██╔════╝ ╚██╗██╔╝
+██║       ███████║ █████╗   ███████║ ██████╔╝ ██║       ██║   ██║ ██║  ██║ █████╗    ╚███╔╝
+██║       ██╔══██║ ██╔══╝   ██╔══██║ ██╔═══╝  ██║       ██║   ██║ ██║  ██║ ██╔══╝    ██╔██╗
+╚██████╗  ██║  ██║ ███████╗ ██║  ██║ ██║      ╚██████╗  ╚██████╔╝ ██████╔╝ ███████╗ ██╔╝ ██╗
+ ╚═════╝  ╚═╝  ╚═╝ ╚══════╝ ╚═╝  ╚═╝ ╚═╝       ╚═════╝   ╚═════╝  ╚═════╝  ╚══════╝ ╚═╝  ╚═╝
 ```
 
 # cheapcodex-bulk-apikey
 
-**Bulk-create CheapCodex accounts with auto-generated API keys — OpenAI-compatible inference + 9Router connector.**
+**Bulk-create CheapCodex accounts with auto-generated API keys — OpenAI-compatible + 9Router connector.**
 
 [![Node](https://img.shields.io/badge/Node-%E2%89%A518-3DA639?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-blue?style=for-the-badge)](#)
@@ -70,15 +70,15 @@ cd cheapcodex-bulk-apikey
 printf 'socks5://127.0.0.1:1080\n' > proxies.txt
 
 # 2) go
-node launcher.js                                                   # interactive: mint / verify / screen / settings
+node src/launcher.js                                                   # interactive: mint / verify / screen / settings
 # or drive it directly:
-node cli.js screen --screen 60 --out round.txt                     # exits that carry the host right now
-node cli.js mint   --count 30 --workers 2 --proxy-file round.txt   # any N; 30 is just the sample default
-node cli.js verify                                           # re-check every key in keys.txt
-node cli.js probe  --accounts accounts.json --n 1                  # deep probe of one account
+node src/cli.js screen --screen 60 --out round.txt                     # exits that carry the host right now
+node src/cli.js mint   --count 30 --workers 2 --proxy-file round.txt   # any N; 30 is just the sample default
+node src/cli.js verify                                           # re-check every key in keys.txt
+node src/cli.js probe  --accounts accounts.json --n 1                  # deep probe of one account
 ```
 
-`node cli.js help` lists the tasks, and the [options table](#️-options) lists the flags each task
+`node src/cli.js help` lists the tasks, and the [options table](#️-options) lists the flags each task
 actually reads. Keys are appended to `keys.txt`, one per line, the moment a key verifies.
 
 ## ✅ Verified working
@@ -97,7 +97,7 @@ A key reaches `keys.txt` only after the provider's own API answers with it:
 | keys persisted and live-validated | **17** (`keys.txt`, every one `usage 200`) |
 | final verification pass | **17/17 ok** |
 
-`node cli.js verify` reproduces the check for your own file, and no key that fails verification is ever
+`node src/cli.js verify` reproduces the check for your own file, and no key that fails verification is ever
 written.
 
 ## 🤖 Models & free tier
@@ -134,7 +134,7 @@ Minted keys go into **group 2** (`minimum_balance_usd: 0`); group 33 serves the 
 
 **Want more of it?** One account per key, and the balance is per account: N keys = N accounts, each with
 its own budget the moment you fund it (or the campaign returns). Nothing has to be re-minted —
-[`models.json`](models.json) holds the measured snapshot (`catalog_status: "gated"`, the gate body, the
+[`models.json`](src/models.json) holds the measured snapshot (`catalog_status: "gated"`, the gate body, the
 group table, the `/v1/usage` shape).
 
 ## 🔌 Connect to 9Router
@@ -142,7 +142,7 @@ group table, the `/v1/usage` shape).
 CheapCodex is OpenAI-compatible, so register it once and use every key:
 
 ```bash
-node connect-9router.js \
+node src/connect-9router.js \
   --base http://localhost:20128 --password 123456 \
   --keys-file keys.txt
 ```
@@ -158,7 +158,7 @@ cheapcodex/gpt-4o-mini
 ```
 
 Point the connector at a refreshed `keys.txt` to add more accounts; the node and
-its model list stay the same. `node launcher.js --connect-9router` runs exactly
+its model list stay the same. `node src/launcher.js --connect-9router` runs exactly
 this and asks for the base URL and password first.
 
 ## 🧭 How it works
@@ -192,11 +192,11 @@ step died with its exit.
 ## ⚙️ Options
 
 ```bash
-node cli.js mint   --count 30 --workers 2 --proxy-file proxies.txt
-node cli.js mint   --keys-only                 # rescue: keys for records whose key step died
-node cli.js verify                                           # re-check every key in keys.txt
-node cli.js probe  --accounts accounts.json --n 1   # deep probe of one account
-node cli.js screen --screen 60 --out round.txt # candidate exits that carry the host right now
+node src/cli.js mint   --count 30 --workers 2 --proxy-file proxies.txt
+node src/cli.js mint   --keys-only                 # rescue: keys for records whose key step died
+node src/cli.js verify                                           # re-check every key in keys.txt
+node src/cli.js probe  --accounts accounts.json --n 1   # deep probe of one account
+node src/cli.js screen --screen 60 --out round.txt # candidate exits that carry the host right now
 ```
 
 | task | flags |
@@ -211,14 +211,14 @@ A sample batch ran as `--workers 2 --send-gap 20000 --timeout 30000 --retries 2`
 
 | file | contents |
 |---|---|
-| `cli.js` | task dispatcher: `mint` → `mint.js`, `verify` → `probe-key.js`, `screen` → `status.js` |
-| `launcher.js` | interactive menu over the same three tasks; remembers count, concurrency and the chat-proof switch in `launcher.config.json` |
-| `mint.js` | the account and key pipeline, including the keyless rescue and the file-wide re-verification |
-| `status.js` | gate snapshot and exit screening |
-| `probe-key.js` | single-account deep probe |
+| `src/cli.js` | task dispatcher: `mint` → `src/mint.js`, `verify` → `src/probe-key.js`, `screen` → `src/status.js` |
+| `src/launcher.js` | interactive menu over the same three tasks; remembers count, concurrency and the chat-proof switch in `launcher.config.json` |
+| `src/mint.js` | the account and key pipeline, including the keyless rescue and the file-wide re-verification |
+| `src/status.js` | gate snapshot and exit screening |
+| `src/probe-key.js` | single-account deep probe |
+| `src/models.json` | the measured catalog snapshot, group table and `/v1/usage` shape |
 | `keys.txt` | one live-validated key per line, git-ignored |
 | `accounts.json` | per-account record: email, dot-free twin, password, key, key id, group, check-in, campaign snapshot, verify block |
-| `models.json` | the measured catalog snapshot, group table and `/v1/usage` shape |
 | `outputs/` | screen logs, batch logs, rescue log, verification passes, raw gate snapshots, git-ignored |
 | `proxies.txt` | your proxy pool, one proxy per line, git-ignored |
 

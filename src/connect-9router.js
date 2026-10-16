@@ -11,17 +11,18 @@
  * model list stay the same.
  *
  * Usage:
- *   node connect-9router.js \
+ *   node src/connect-9router.js \
  *     --base http://localhost:20128 --password 123456 \
  *     --keys-file keys.txt [--model <id>]
  *
- *   node connect-9router.js --api-key <one key>        # register a single key
+ *   node src/connect-9router.js --api-key <one key>        # register a single key
  *
  * Options:
  *   --base <url>        9Router base URL                 [http://localhost:20128]
  *   --password <pw>     9Router password                                    [123456]
  *   --api-key <key>     register exactly this key
- *   --keys-file <file>  one key per line, `#` comments skipped  [keys.txt]
+ *   --keys-file <file>  one key per line, `#` comments skipped  [keys.txt in
+ *                       the repository root]
  *   --name <name>       connection name in 9Router                   [CheapCodex]
  *                       (keys-file mode appends -001, -002, … per key)
  *   --prefix <prefix>   provider-node prefix; model ids become
@@ -38,7 +39,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const HERE = __dirname;
+const HERE = path.resolve(__dirname, '..'); // data root (the repo root)
 const UA = 'cheapcodex-bulk-apikey-9router-connector/1.0';
 
 async function login9router(base, password) {

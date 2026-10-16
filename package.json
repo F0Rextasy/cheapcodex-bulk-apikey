@@ -5,16 +5,17 @@
   "license": "MIT",
   "type": "commonjs",
   "bin": {
-    "cheapcodex-bulk-apikey": "cli.js",
-    "cheapcodex-bulk-apikey-launcher": "launcher.js"
+    "cheapcodex-bulk-apikey": "src/cli.js",
+    "cheapcodex-bulk-apikey-launcher": "src/launcher.js"
   },
-  "main": "cli.js",
+  "main": "src/cli.js",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "start": "node launcher.js",
-    "mint": "node cli.js"
+    "start": "node src/launcher.js",
+    "mint": "node src/cli.js",
+    "9router": "node src/connect-9router.js"
   },
   "keywords": [
     "api-key",
@@ -26,16 +27,7 @@
     "apikey"
   ],
   "files": [
-    "account-info.js",
-    "cdp.js",
-    "chrome-flags.js",
-    "cli.js",
-    "launcher.js",
-    "mint.js",
-    "probe-key.js",
-    "proxy.js",
-    "status.js",
-    "connect-9router.js",
+    "src",
     "README.md",
     "LICENSE"
   ]

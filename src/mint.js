@@ -18,9 +18,9 @@
  * keys.txt the moment they verify.
  *
  * Usage:
- *   node mint.js --count 30 --out keys.txt [--proxy-file ../../out/pool.txt] [--workers 3]
- *   node mint.js --count 1  --proxy socks5://127.0.0.1:40000
- *   node mint.js --verify-only keys.txt
+ *   node src/mint.js --count 30 --out keys.txt [--proxy-file ../../out/pool.txt] [--workers 3]
+ *   node src/mint.js --count 1  --proxy socks5://127.0.0.1:40000
+ *   node src/mint.js --verify-only keys.txt
  */
 const crypto = require('crypto');
 const fs = require('fs');
@@ -350,9 +350,9 @@ async function main() {
   if (args.help || args.h || (!args.count && !args['verify-only'] && !args['keys-only'])) {
     console.log(`cheapcodex-mint — one API key per fresh account
 
-  node mint.js --count N --out keys.txt [--proxy-file pool.txt --workers 3] [--delay 4000]
-  node mint.js --count 1 --proxy socks5://127.0.0.1:40000   # single exit (WARP)
-  node mint.js --verify-only keys.txt [--proxy-file pool.txt]
+  node src/mint.js --count N --out keys.txt [--proxy-file pool.txt --workers 3] [--delay 4000]
+  node src/mint.js --count 1 --proxy socks5://127.0.0.1:40000   # single exit (WARP)
+  node src/mint.js --verify-only keys.txt [--proxy-file pool.txt]
 
   Gates (live 2026-10-14): registration open, e-mail verification on, Turnstile OFF,
   signup suffix whitelist = @qq.com/@gmail.com → Emailnator gmail boxes are the only

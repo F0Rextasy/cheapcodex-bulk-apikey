@@ -4,7 +4,7 @@
  * user-side surfaces (me, subsidy, groups, keys, /v1/usage) so the funding path and
  * the 403 INSUFFICIENT_BALANCE gate can be read directly.
  *
- *   node account-info.js --accounts out/accounts-test.json --proxy-file out/pool.txt [--n 1]
+ *   node src/account-info.js --accounts out/accounts-test.json --proxy-file out/pool.txt [--n 1]
  */
 const fs = require('fs');
 const path = require('path');
@@ -76,7 +76,8 @@ const isNet = (m) => /SOCKS|CONNECT|timeout|ECONN|ETIMEDOUT|EAI_AGAIN|socket|TLS
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const accFile = String(args.accounts || path.join(__dirname, 'out', 'accounts-test.json'));
+  const ROOT = path.resolve(__dirname, '..'); // data root (the repo root)
+const accFile = String(args.accounts || path.join(ROOT, 'out', 'accounts-test.json'));
   const n = parseInt(args.n || '1', 10);
   const pool = args['proxy-file']
     ? fs.readFileSync(String(args['proxy-file']), 'utf8').split(/\r?\n/).map((l) => l.split('#')[0].trim()).filter(Boolean).filter((l) => !/127\.0\.0\.1/.test(l))

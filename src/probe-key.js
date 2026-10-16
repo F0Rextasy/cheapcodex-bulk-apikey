@@ -7,7 +7,7 @@
  * Logs in, optionally creates a new key bound to a group, then probes
  * /v1/usage, /v1/models and a few chat model names.
  *
- *   node probe-key.js --accounts out/accounts-test.json --n 1 --group 2 --proxy-file out/pool.txt
+ *   node src/probe-key.js --accounts out/accounts-test.json --n 1 --group 2 --proxy-file out/pool.txt
  */
 const fs = require('fs');
 const path = require('path');
@@ -79,7 +79,8 @@ const isNet = (m) => /SOCKS|CONNECT|timeout|ECONN|ETIMEDOUT|EAI_AGAIN|socket|TLS
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const accFile = String(args.accounts || path.join(__dirname, 'out', 'accounts-test.json'));
+  const ROOT = path.resolve(__dirname, '..'); // data root (the repo root)
+const accFile = String(args.accounts || path.join(ROOT, 'out', 'accounts-test.json'));
   const n = parseInt(args.n || '1', 10);
   const pool = args['proxy-file']
     ? fs.readFileSync(String(args['proxy-file']), 'utf8').split(/\r?\n/).map((l) => l.split('#')[0].trim()).filter(Boolean).filter((l) => !/127\.0\.0\.1/.test(l))

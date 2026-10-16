@@ -3,8 +3,8 @@
  * cheapcodex status/screen probe — confirm the sign-up gates (New API `/api/status`,
  * unauthenticated) and find exits that actually carry the target.
  *
- *   node status.js --screen 60        # screen 60 candidates, keep live exits
- *   node status.js --pool out/pool.txt --status   # re-read gates via existing pool
+ *   node src/status.js --screen 60        # screen 60 candidates, keep live exits
+ *   node src/status.js --pool out/pool.txt --status   # re-read gates via existing pool
  *
  * Candidates: out/new-live.txt (fresh) then union-live.txt, then WARP SOCKS.
  */
@@ -13,7 +13,8 @@ const path = require('path');
 const { probe, fetchText, parseProxy } = require('./proxy.js');
 
 const HOST = 'api.cheapcodex.online';
-const OUT = path.join(__dirname, 'out');
+const ROOT = path.resolve(__dirname, '..'); // data root (the repo root)
+const OUT = path.join(ROOT, 'out');
 const POOL_FILE = path.join(OUT, 'pool.txt');
 let PROBE_TIMEOUT = 15000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -32,7 +33,7 @@ function parseArgs(argv) {
 }
 
 function loadPool(file) {
-  const p = path.join(__dirname, 'out', file);
+  const p = path.join(ROOT, 'out', file);
   const out = [];
   if (!fs.existsSync(p)) return out;
   for (const l of fs.readFileSync(p, 'utf8').split(/\r?\n/)) {

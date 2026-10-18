@@ -194,10 +194,10 @@ node src/cli.js screen --screen 60 --out round.txt # candidate exits that carry 
 
 | task | flags |
 | --- | --- |
-| `mint` | `--count N` (30) · `--workers N` (2) · `--proxy-file <pool>` · `--proxy <one exit>` · `--group N` (2) · `--out keys.txt` · `--accounts accounts.json` · `--name-prefix ccx-bulk` · `--send-gap MS` (20000) · `--mail-gap MS` (6000) · `--timeout MS` (45000) · `--retries N` (3) · `--delay MS` (4000) · `--no-verify` |
+| `mint` | `--count N` (30) · `--workers N` (2) · `--proxy-file <pool>` · `--proxy <one exit>` · `--allow-warp` (keep `127.0.0.1` pool lines) · `--group N` (2) · `--out keys.txt` · `--accounts accounts.json` · `--name-prefix ccx-bulk` · `--send-gap MS` (20000) · `--mail-gap MS` (6000) · `--timeout MS` (45000) · `--retries N` (3) · `--delay MS` (4000) · `--no-verify` |
 | `mint --keys-only` | rescue pass over `accounts.json`: mints a key for every record without one and re-verifies records whose verify step died with its exit |
-| `mint --verify-only` | re-checks every key in `--out` with `GET /v1/usage` plus a chat probe, one line per key |
-| `verify` | `--accounts accounts.json` · `--n N` (which record, 1-based) · `--group N` (mint a fresh key into that group first) · `--models a,b,c` (chat models to try) · `--proxy-file <pool>`: a deep single-account probe |
+| `mint --verify-only` | re-checks every key in `--out` (default `keys.txt`) with `GET /v1/usage` plus a chat probe, one line per key |
+| `probe` | `--accounts accounts.json` · `--n N` (which record, 1-based) · `--group N` (mint a fresh key into that group first) · `--models a,b,c` (chat models to try) · `--proxy-file <pool>`: a deep single-account probe |
 | `screen` | `--screen N` (60 candidates) · `--out <file>` · `--timeout MS` (20000) · `--max-runtime MS` (900000) · `--pool <file>` (re-read the gates through an existing pool) |
 
 ## 🛰️ Behind a proxy

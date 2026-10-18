@@ -11,6 +11,7 @@
 const fs = require('fs');
 const path = require('path');
 const { probe, fetchText, parseProxy } = require('./proxy.js');
+const { presetArgv, resolvePreset } = require('./preset');
 
 const HOST = 'api.cheapcodex.online';
 const ROOT = path.resolve(__dirname, '..'); // data root (the repo root)
@@ -98,6 +99,15 @@ async function mapPool(items, workers, fn) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  // Presets (operator standard v3): --preset picks the screen concurrency
+  // (turbo = 5, balanced = 4, safe = 2). Without --preset this screener keeps
+  // its historical 8 workers; an explicit --workers always wins.
+  const workersArg = args.workers != null && args.workers !== true && !Number.isNaN(parseInt(String(args.workers), 10)) ? parseInt(String(args.workers), 10) : null;
+  const workers = Math.max(1, resolvePreset({
+    preset: typeof args.preset === 'string' ? args.preset : presetArgv(),
+    conc: workersArg,
+    defaultConc: 8,
+  }).conc);
   let lines;
   if (args.pool) {
     lines = fs
@@ -116,10 +126,10 @@ async function main() {
     lines = [...fresh.slice(0, wantFresh), ...union.slice(0, want - wantFresh)];
     const roundOut = args.out ? String(args.out) : null;
     if (roundOut) fs.writeFileSync(roundOut, '');
-    console.log(`  screening ${lines.length} candidates (${wantFresh} fresh) · timeout ${PROBE_TIMEOUT}ms · cap ${MAX_RUNTIME / 1000}s`);
+    console.log(`  screening ${lines.length} candidates (${wantFresh} fresh) · timeout ${PROBE_TIMEOUT}ms · cap ${MAX_RUNTIME / 1000}s · workers ${workers}`);
     const t0 = Date.now();
     const results = [];
-    await mapPool(lines, 8, async (line) => {
+    await mapPool(lines, workers, async (line) => {
       if (Date.now() - t0 > MAX_RUNTIME) return null;
       const r = await checkExit(line);
       if (r) {
@@ -143,7 +153,7 @@ async function main() {
     return;
   }
 
-  const results = await mapPool(lines, 8, async (line) => {
+  const results = await mapPool(lines, workers, async (line) => {
     const r = await checkExit(line);
     if (r) {
       if (args.out) {

@@ -27,6 +27,11 @@ const fs = require('fs');
 const https = require('https');
 const path = require('path');
 const { URL } = require('url');
+const { presetArgv, resolvePreset } = require('./preset');
+const { AsyncLocalStorage } = require('async_hooks');
+const { uaFor } = require('./ua-pool');
+// A flag with no value (`--workers`) parses as boolean true — treat it as unset.
+const numArg = (v) => (v == null || v === true || Number.isNaN(parseInt(v, 10)) ? null : parseInt(v, 10));
 
 let createAgent = null;
 let parseProxy = null;
@@ -42,6 +47,12 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 const UI_HEADER = { 'X-User-UI-Request': '1' };
 const AFF_CODE = 'U7SSQZSDB36S'; // invite code from the pool report (affiliate code field)
 
+
+// Per-account fingerprint (operator standard v3): the pool runs several accounts
+// at once, so every attempt carries its own UA from the ua-pool (SD_UA pins one
+// UA for a one-off run; SD_UA_POOL supplies a file or an inline list).
+const SESS = new AsyncLocalStorage();
+const activeUa = () => { const s = SESS.getStore(); return (s && s.ua) || UA; };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function parseArgs(argv) {
@@ -72,7 +83,7 @@ function rawRequest(url, { method = 'GET', headers = {}, body, proxy = null, tim
         agent: proxy && createAgent ? createAgent(parsedProxy) : undefined,
         headers: {
           Accept: 'application/json',
-          'User-Agent': UA,
+          'User-Agent': activeUa(),
           ...(payload ? { 'Content-Type': 'application/json', 'Content-Length': payload.length } : {}),
           ...headers,
         },
@@ -363,7 +374,18 @@ async function main() {
   const count = parseInt(args.count || '30', 10);
   const out = String(args.out || 'keys.txt');
   const accountsOut = String(args.accounts || out.replace(/\.txt$/, '') + '.accounts.json');
-  const delay = parseInt(args.delay || '4000', 10);
+  // Presets (operator standard v3): turbo = 5 workers / 3 s pad, balanced = 4/6,
+  // safe = 2/8. Explicit --workers/--delay always win; without --preset the rail
+  // keeps today's shape exactly (2 workers, 4000 ms pad).
+  const presetRun = resolvePreset({
+    preset: typeof args.preset === 'string' ? args.preset : presetArgv(),
+    conc: numArg(args.workers),
+    gap: numArg(args.delay) != null ? numArg(args.delay) / 1000 : null,
+    defaultConc: 2,
+    defaultGap: 4,
+  });
+  const delay = Math.max(0, Math.round(presetRun.gap * 1000));
+  const workers = Math.max(1, presetRun.conc);
   const namePrefix = String(args['name-prefix'] || 'ccx-bulk');
   const groupId = args.group !== undefined ? parseInt(String(args.group), 10) : 2; // "codex 基本不降智", minimum_balance_usd 0
   const verifyKeys = !args['no-verify'];
@@ -447,6 +469,7 @@ async function main() {
   async function attempt(index) {
     const started = Date.now();
     const proxy = nextProxy();
+    console.log(`… #${index} başladı (${proxy ? String(proxy).replace(/:[^:@]+@/, ':***@') : 'direct'})`);
     const say = (m) => console.log(`  [${index}] ${m}`);
     try {
       // Public gmail pool: plenty of mailboxes are already registered here — retry
@@ -495,7 +518,7 @@ async function main() {
           keys.push(key);
           save();
           say(`✔ ${key.slice(0, 14)}… (${((Date.now() - started) / 1000).toFixed(1)}s) usage=${v.usage_status} completion=${v.completion_status}${v.gate ? ' ' + v.gate : ''}`);
-          return true;
+          return key;
         } catch (e) {
           lastErr = e;
           const m = String(e.message);
@@ -511,7 +534,7 @@ async function main() {
     }
   }
 
-  const workers = Math.max(1, parseInt(args.workers || '2', 10));
+  const keysBefore = keys.length;
   if (args['send-gap']) SEND_GAP_MS.v = parseInt(args['send-gap'], 10);
   if (args['mail-gap']) MAIL_GAP_MS.v = parseInt(args['mail-gap'], 10);
   if (args.timeout) REQ_TIMEOUT_MS = parseInt(args.timeout, 10);
@@ -523,11 +546,15 @@ async function main() {
     while (keys.length < count && attempts < maxAttempts) {
       const index = nextIndex();
       attempts++;
-      const ok = await attempt(index);
-      if (keys.length < count) await sleep(ok ? delay : Math.min(delay, 3000));
+      // Per-account fingerprint: its own UA line for this attempt.
+      const made = await SESS.run({ ua: uaFor(index).ua }, () => attempt(index));
+      if (made) console.log(`✓ #${index} KEY ALINDI: ${String(made).slice(0, 22)}… [${keys.length - keysBefore} ok / ${attempts} deneme]`);
+      else console.log(`✗ #${index} key yok: see the step log above`);
+      if (keys.length < count) await sleep(made ? delay : Math.min(delay, 3000));
     }
   }
   await Promise.all(Array.from({ length: workers }, workerLoop));
+  console.log(`CHEAPCODEX-MINT ${keys.length - keysBefore}/${count} OK`);
   console.log(`  keys → ${out} (${keys.length} line(s)) · accounts → ${accountsOut}`);
 }
 

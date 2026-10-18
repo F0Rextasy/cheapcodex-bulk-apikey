@@ -10,6 +10,8 @@
  *   node src/cli.js screen   keep only proxy exits that reach the provider
  *   node src/cli.js 9router  register the keys in keys.txt with a 9Router instance
  *   node src/cli.js help
+ * Presets (operator standard v3): `--preset=turbo|balanced|safe` on mint/screen
+ * picks workers + the pause; explicit flags win; absent = today's defaults.
  *
  * Every task spawns the matching module in this folder, so a crash in one run
  * never leaves state behind in this process.
@@ -36,6 +38,7 @@ function help() {
   console.log('\nproxy pool:');
   console.log('  one exit per line in proxies.txt — scheme://host:port[#comment], user:pass@ supported');
   console.log('\nno options? run the interactive launcher:  node src/launcher.js');
+  console.log('  --preset=turbo|balanced|safe  run shape for mint (turbo = 5 workers)');
 }
 
 const argv = process.argv.slice(2);

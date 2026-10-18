@@ -6,6 +6,7 @@
   "type": "commonjs",
   "bin": {
     "cheapcodex-bulk-apikey": "src/cli.js",
+    "cheapcodex-bulk-apikey-9router": "src/connect-9router.js",
     "cheapcodex-bulk-apikey-launcher": "src/launcher.js"
   },
   "main": "src/cli.js",
